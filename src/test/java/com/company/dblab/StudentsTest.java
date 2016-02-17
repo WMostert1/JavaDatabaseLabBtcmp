@@ -13,12 +13,12 @@ import org.junit.Test;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StudentsTest {
 	
-	private DatabaseManager dbm;
+	private IDatabaseManager dbm;
 	
 	@Before
 	public void setUp() throws SQLException{
 		Connection c = DriverManager.getConnection("jdbc:derby:c:\\temp\\db");
-		dbm = new DatabaseManager(c);	
+		dbm = new JDBCDatabaseManager(c);	
 	}
 	
 	@After
@@ -29,7 +29,7 @@ public class StudentsTest {
 	@Test
 	public void testClean() {
 		try {
-			dbm.clean();
+			dbm.delete();
 		} catch (Exception e) {
 			fail();
 		}
@@ -38,7 +38,13 @@ public class StudentsTest {
 	@Test
 	public void testInsert(){
 		try {
-			dbm.populateStudents();	
+			String [] names = {"Sannie","Wally","Jaun"};
+			int [] ages = {4, 58 , 29};
+			String [] cities = {"Betlehem", "Witbank", "Danville"};
+			for(int i = 0; i < names.length; i++){
+				dbm.create(new Student(names[i],ages[i],cities[i],i+1));	
+			}
+
 		} catch (Exception e) {
 			fail();
 		}
@@ -47,7 +53,7 @@ public class StudentsTest {
 	@Test
 	public void testRetrieveData(){
 		try{
-		ArrayList<Student> studentsList = dbm.getStudents();
+		ArrayList<Student> studentsList = dbm.read();
 		assertNotNull(studentsList);
 		assertTrue(!studentsList.isEmpty());
 		
